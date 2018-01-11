@@ -37,13 +37,13 @@ class TasksController extends AppController
     }
 
 
-    public function tasks() {
+    public function logs() {
         $taskId = $this->request->getParam('id');
-        $this->loadModel('Tasks');
-        $tasks = $this->Tasks->find()
+        $this->loadModel('TaskLogs');
+        $taskLogs = $this->TaskLogs->find()
             ->where(['task_id' => $taskId]);
 
-        $this->_json($tasks);
+        $this->_json($taskLogs);
     }
 
 
@@ -65,8 +65,6 @@ class TasksController extends AppController
         $task = $this->Tasks->newEntity();
         $state = 200;
         $message = null;
-
-        // TODO: set next number for the given project
 
         if ($this->request->is('post')) {
             $task = $this->Tasks->patchEntity($task, $this->request->getData());

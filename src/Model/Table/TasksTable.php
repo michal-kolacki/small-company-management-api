@@ -6,23 +6,6 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
-/**
- * Tasks Model
- *
- * @property \App\Model\Table\ProjectsTable|\Cake\ORM\Association\BelongsTo $Projects
- * @property \App\Model\Table\StatesTable|\Cake\ORM\Association\BelongsTo $States
- * @property \App\Model\Table\TaskLogsTable|\Cake\ORM\Association\HasMany $TaskLogs
- *
- * @method \App\Model\Entity\Task get($primaryKey, $options = [])
- * @method \App\Model\Entity\Task newEntity($data = null, array $options = [])
- * @method \App\Model\Entity\Task[] newEntities(array $data, array $options = [])
- * @method \App\Model\Entity\Task|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\Task patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \App\Model\Entity\Task[] patchEntities($entities, array $data, array $options = [])
- * @method \App\Model\Entity\Task findOrCreate($search, callable $callback = null, $options = [])
- *
- * @mixin \Cake\ORM\Behavior\TimestampBehavior
- */
 class TasksTable extends Table
 {
 
@@ -46,14 +29,22 @@ class TasksTable extends Table
             'foreignKey' => 'project_id',
             'joinType' => 'INNER'
         ]);
-        $this->belongsTo('States', [
-            'foreignKey' => 'state_id',
+        $this->belongsTo('TaskStates', [
+            'foreignKey' => 'task_state_id',
             'joinType' => 'INNER'
         ]);
         $this->hasMany('TaskLogs', [
             'foreignKey' => 'task_id'
         ]);
     }
+
+
+    public function beforeSave($event, $entity, $options) {
+        if ($entity->isNew() && !$entity->number) {
+            $entity->number = $this->find()->where(['project_id' => $entity->project_id])->count() + 1;
+        }
+    }
+
 
     /**
      * Default validation rules.

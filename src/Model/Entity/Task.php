@@ -34,7 +34,7 @@ class Task extends Entity
         'name' => true,
         'content' => true,
         'project_id' => true,
-        'state_id' => true,
+        'task_state_id' => true,
         'created' => true,
         'modified' => true,
         'project' => true,
