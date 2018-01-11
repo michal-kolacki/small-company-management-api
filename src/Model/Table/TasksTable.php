@@ -91,7 +91,7 @@ class TasksTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['project_id'], 'Projects'));
-        $rules->add($rules->existsIn(['state_id'], 'States'));
+        // $rules->add($rules->existsIn(['state_id'], 'States'));
 
         return $rules;
     }

@@ -4,7 +4,7 @@ namespace App\Controller;
 use App\Controller\AppController;
 
 
-class ProjectsController extends AppController
+class TasksController extends AppController
 {
     public function initialize()
     {
@@ -25,59 +25,61 @@ class ProjectsController extends AppController
 
     public function view()
     {
-        $projectId = $this->request->getParam('id');
+        $taskId = $this->request->getParam('id');
 
         if ($this->request->is('get')) {
-            $this->__view($projectId);
+            $this->__view($taskId);
         } else if ($this->request->is(['put', 'post', 'patch'])) {
-            $this->__edit($projectId);
+            $this->__edit($taskId);
         } else if ($this->request->is('delete')) {
-            $this->__delete($projectId);
+            $this->__delete($taskId);
         }
     }
 
 
     public function tasks() {
-        $projectId = $this->request->getParam('id');
+        $taskId = $this->request->getParam('id');
         $this->loadModel('Tasks');
         $tasks = $this->Tasks->find()
-            ->where(['project_id' => $projectId]);
+            ->where(['task_id' => $taskId]);
 
         $this->_json($tasks);
     }
 
 
     private function __index() {
-        $projects = $this->Projects->find();
-        $this->_json($projects);
+        $tasks = $this->Tasks->find();
+        $this->_json($tasks);
     }
 
 
     private function __view($id)
     {
-        $project = $this->Projects->get($id);
-        $this->_json($project);
+        $task = $this->Tasks->get($id);
+        $this->_json($task);
     }
 
 
     private function __add()
     {
-        $project = $this->Projects->newEntity();
+        $task = $this->Tasks->newEntity();
         $state = 200;
         $message = null;
 
+        // TODO: set next number for the given project
+
         if ($this->request->is('post')) {
-            $project = $this->Projects->patchEntity($project, $this->request->getData());
-            if ($this->Projects->save($project)) {
-                $message = $project;
+            $task = $this->Tasks->patchEntity($task, $this->request->getData());
+            if ($this->Tasks->save($task)) {
+                $message = $task;
             } else {
                 $state = 404;
                 $msgTmp = [];
-                foreach($project->getErrors() as $key => $err) {
+                foreach($task->getErrors() as $key => $err) {
                     $msgTmp[] = '"' . $key . '": ' . reset($err);
                 }
                 $message = [
-                    'message' => __('Cannot create project') . ', ' . implode(', ', $msgTmp)
+                    'message' => __('Cannot create task') . ', ' . implode(', ', $msgTmp)
                 ];
             }
         }
@@ -89,24 +91,24 @@ class ProjectsController extends AppController
 
     private function __edit($id)
     {
-        $project = $this->Projects->get($id, [
+        $task = $this->Tasks->get($id, [
             'contain' => []
         ]);
         $state = 200;
         $message = null;
 
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $project = $this->Projects->patchEntity($project, $this->request->getData());
-            if ($this->Projects->save($project)) {
-                $message = $project;
+            $task = $this->Tasks->patchEntity($task, $this->request->getData());
+            if ($this->Tasks->save($task)) {
+                $message = $task;
             } else {
                 $state = 404;
                 $msgTmp = [];
-                foreach($project->getErrors() as $key => $err) {
+                foreach($task->getErrors() as $key => $err) {
                     $msgTmp[] = '"' . $key . '": ' . reset($err);
                 }
                 $message = [
-                    'message' => __('The project could not be saved') . ', ' .implode(', ', $msgTmp)
+                    'message' => __('The task could not be saved') . ', ' .implode(', ', $msgTmp)
                 ];
             }
         }
@@ -119,14 +121,14 @@ class ProjectsController extends AppController
     private function __delete($id = null)
     {
         $this->request->allowMethod(['post', 'delete']);
-        $project = $this->Projects->get($id);
+        $task = $this->Tasks->get($id);
         $state = 200;
         $message = '';
 
-        if (!$this->Projects->delete($project)) {
+        if (!$this->Tasks->delete($task)) {
             $state = 404;
             $message = [
-                'message' => __('The project could not be deleted. Please, try again.')
+                'message' => __('The task could not be deleted. Please, try again.')
             ];
         }
 

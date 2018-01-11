@@ -296,3 +296,46 @@ ALTER TABLE `task_logs`
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+
+/********************** MODIFICATIONS **********************/
+
+ALTER TABLE `projects` ADD `code` VARCHAR(5) NOT NULL AFTER `name`;
+
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL,
+  `email` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `password` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `created` datetime NOT NULL,
+  `modified` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `tasks` CHANGE `state_id` `task_state_id` TINYINT(4) NOT NULL;
+
+CREATE TABLE `task_states` (
+  `id` int(11) NOT NULL,
+  `name` varchar(20) COLLATE utf8_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE `task_states`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `task_states`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+INSERT INTO `task_states` (`id`, `name`) VALUES (NULL, 'New'), (NULL, 'In progress');
+
+INSERT INTO `task_states` (`id`, `name`) VALUES (NULL, 'Ready for testing'), (NULL, 'In testing');
+
+INSERT INTO `task_states` (`id`, `name`) VALUES (NULL, 'Resolved'), (NULL, 'Closed');
+
+INSERT INTO `task_states` (`id`, `name`) VALUES (NULL, 'Postponed');
+
+
+
