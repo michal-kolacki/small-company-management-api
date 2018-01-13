@@ -7,6 +7,7 @@ class Project extends Entity
 {
     protected $_accessible = [
         'name' => true,
+        'code' => true,
         'client_id' => true,
         'created' => true,
         'client' => true,

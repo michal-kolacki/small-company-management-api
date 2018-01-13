@@ -26,6 +26,13 @@ Router::scope('/tasks', function ($routes) {
 });
 
 
+
+Router::scope('/tasklogs', function ($routes) {
+    $routes->connect('/', ['controller' => 'TaskLogs', 'action' => 'index']);
+    $routes->connect('/:id', ['controller' => 'TaskLogs', 'action' => 'view']);
+});
+
+
 Router::scope('/taskstates', function ($routes) {
     $routes->connect('/', ['controller' => 'TaskStates', 'action' => 'index']);
 });
