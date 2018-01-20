@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\Collection\Collection;
 
 
 class ProjectsController extends AppController
@@ -56,6 +57,16 @@ class ProjectsController extends AppController
     private function __view($id)
     {
         $project = $this->Projects->get($id);
+        $this->loadModel('Tasks');
+        $tasksTime = $this->Tasks->find()
+            ->where(['project_id' => $id])
+            ->contain(['TaskLogs'])
+            ->extract('task_logs.{*}.time')
+            ->reduce(function ($sum, $time) {
+                return $sum + $time;
+            }, 0);
+
+        $project->time = $tasksTime;
         $this->_json($project);
     }
 
