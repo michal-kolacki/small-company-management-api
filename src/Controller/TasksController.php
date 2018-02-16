@@ -56,6 +56,7 @@ class TasksController extends AppController
     private function __view($id)
     {
         $task = $this->Tasks->get($id);
+        $task->content = nl2br($task->content);
         $this->_json($task);
     }
 
