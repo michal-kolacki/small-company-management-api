@@ -6,22 +6,6 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
-/**
- * TaskLogs Model
- *
- * @property \App\Model\Table\TasksTable|\Cake\ORM\Association\BelongsTo $Tasks
- * @property \App\Model\Table\UsersTable|\Cake\ORM\Association\BelongsTo $Users
- *
- * @method \App\Model\Entity\TaskLog get($primaryKey, $options = [])
- * @method \App\Model\Entity\TaskLog newEntity($data = null, array $options = [])
- * @method \App\Model\Entity\TaskLog[] newEntities(array $data, array $options = [])
- * @method \App\Model\Entity\TaskLog|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\TaskLog patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \App\Model\Entity\TaskLog[] patchEntities($entities, array $data, array $options = [])
- * @method \App\Model\Entity\TaskLog findOrCreate($search, callable $callback = null, $options = [])
- *
- * @mixin \Cake\ORM\Behavior\TimestampBehavior
- */
 class TaskLogsTable extends Table
 {
 
@@ -70,7 +54,7 @@ class TaskLogsTable extends Table
 
         $validator
             ->scalar('comment')
-            ->maxLength('comment', 255)
+            ->maxLength('comment', 500)
             ->allowEmpty('comment');
 
         return $validator;
