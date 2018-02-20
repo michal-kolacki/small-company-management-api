@@ -184,7 +184,7 @@ CREATE TABLE `task_logs` (
   `task_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `time` int(11) NOT NULL,
-  `comment` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `comment` varchar(500) COLLATE utf8_unicode_ci DEFAULT NULL,
   `created` datetime NOT NULL,
   `modified` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
