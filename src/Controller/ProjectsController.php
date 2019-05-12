@@ -3,6 +3,7 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use Cake\Collection\Collection;
+use Cake\Core\Configure;
 
 
 class ProjectsController extends AppController
@@ -42,9 +43,69 @@ class ProjectsController extends AppController
         $projectId = $this->request->getParam('id');
         $this->loadModel('Tasks');
         $tasks = $this->Tasks->find()
-            ->where(['project_id' => $projectId]);
+            ->where(['project_id' => $projectId])
+            ->order(['task_state_id' => 'ASC']);
 
         $this->_json($tasks);
+    }
+
+
+    public function report($projectId = null, $dateFrom = null, $dateTo = null) {
+        $this->loadModel('Projects');
+        $this->loadModel('Tasks');
+        $this->loadModel('TaskLogs');
+
+        $project = $this->Projects->get($projectId);
+
+        $tasksIds = $this->Tasks->find()
+            ->where(['project_id' => $projectId])
+            ->extract('id')
+            ->toArray();
+        // pr($tasksIds); die;
+
+        $conditions = ['TaskLogs.task_id IN' => $tasksIds];
+        if ($dateFrom) {
+            $conditions['TaskLogs.created >='] = $dateFrom . ' 00:00:00';
+        }
+        if ($dateTo) {
+            $conditions['TaskLogs.created <='] = $dateTo . ' 23:59:59';
+        }
+        $tasksLogs = $this->TaskLogs->find()
+            ->where($conditions)
+            ->order(['TaskLogs.task_id' => 'ASC'])
+            ->contain('Tasks')
+            ->map(function ($log) {
+                $log->ftime = $this->__formatTime($log->time);
+                return $log;
+            })
+            ->toArray();
+        // pr($tasksLogs); die;
+
+        $timeSum = 0;
+        foreach ($tasksLogs as $log) {
+            $timeSum += $log->time;
+        }
+        // echo $timeSum; die;
+        $this->set('timeSum', $this->__formatTime($timeSum));
+
+
+        $this->set('project', $project);
+        $this->set('logs', $tasksLogs);
+        $this->set('dateFrom', $dateFrom);
+        $this->set('dateTo', $dateTo);
+
+        Configure::write('debug', 0);
+        $html = $this->render('report', 'pdf');
+        // echo $html; die;
+
+        require_once ROOT . DS . 'vendor' . DS . 'mpdf60' . DS . 'mpdf.php';
+        $mpdf = new \mPDF('utf-8', 'A4', '', '', '10', '10', '10', '16');
+        $mpdf->ignore_invalid_utf8 = true;
+        $mpdf->WriteHTML($html);
+
+        $mpdf->Output('report.pdf', 'I');
+        die;
+        return;
     }
 
 
@@ -65,6 +126,19 @@ class ProjectsController extends AppController
             ->reduce(function ($sum, $time) {
                 return $sum + $time;
             }, 0);
+
+//        $timeSum = 0;
+//        $logIndex = 1;
+//        foreach ($tasksTime as $task) {
+//            echo $task->name . '<br />';
+//            foreach ($task->task_logs as $log) {
+//                echo $logIndex . '. ' . $log->comment . ' (' . $log->time . ')<br />';
+//                $logIndex++;
+//                $timeSum += $log->time;
+//            }
+//        }
+//
+//        echo $timeSum; die;
 
         $project->time = $tasksTime;
         $this->_json($project);
@@ -143,4 +217,20 @@ class ProjectsController extends AppController
 
         $this->_json($message, $state);
     }
+
+
+
+    private function __formatTime($seconds) {
+        $tmpTime = $seconds;
+        $h = (int)($tmpTime / 60 / 60);
+        $tmpTime -= $h * 60 * 60;
+        $m = (int)($tmpTime / 60);
+        $s = $tmpTime - ($m * 60);
+
+        $h = $h < 10 ? '0' . $h : $h;
+        $m = $m < 10 ? '0' . $m : $m;
+        $s = $s < 10 ? '0' . $s : $s;
+
+        return $h . ':' . $m . ':' . $s;
+      }
 }

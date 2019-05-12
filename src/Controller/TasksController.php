@@ -48,7 +48,8 @@ class TasksController extends AppController
 
 
     private function __index() {
-        $tasks = $this->Tasks->find();
+        $tasks = $this->Tasks->find()
+            ->order(['task_state_id' => 'ASC']);
         $this->_json($tasks);
     }
 
@@ -56,7 +57,6 @@ class TasksController extends AppController
     private function __view($id)
     {
         $task = $this->Tasks->get($id);
-        $task->content = nl2br($task->content);
         $this->_json($task);
     }
 
